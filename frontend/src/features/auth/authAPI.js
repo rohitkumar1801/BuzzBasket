@@ -1,7 +1,6 @@
-
 export function createUser(userData) {
   return new Promise(async (resolve) => {
-    const response = await fetch('/auth/signup', {
+    const response = await fetch('https://go-kart-estore.onrender.com/auth/signup', {
       method: 'POST',
       body: JSON.stringify(userData),
       headers: { 'content-type': 'application/json' },
@@ -15,7 +14,7 @@ export function createUser(userData) {
 export function checkUser(loginInfo) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('https://go-kart-estore.onrender.com/auth/login', {
         method: 'POST',
         body: JSON.stringify(loginInfo),
         headers: { 'content-type': 'application/json' },
