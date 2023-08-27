@@ -37,18 +37,13 @@ export function updateProduct(update) {
 }
 
 export function fetchProductsByFilters(filter, sort, pagination, admin) {
-  // filter = {"category":["smartphone","laptops"]}
-  // sort = {_sort:"price",_order="desc"}
-  // pagination = {_page:1,_limit=10}
-  // TODO : on server we will support multi values in filter
-  // TODO : Server will filter deleted products in case of non-admin
 
   let queryString = '';
   for (let key in filter) {
     const categoryValues = filter[key];
     if (categoryValues.length) {
       
-      queryString += `${key}=${lastCategoryValue}&`;
+      queryString += `${key}=${categoryValues}&`;
     }
   }
   for (let key in sort) {
