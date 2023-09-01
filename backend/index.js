@@ -18,7 +18,7 @@ const ordersRouter = require('./routes/Order');
 //middlewares
 
 const corsOptions = {
-    origin: "https://go-kart-online.onrender.com" // frontend URI (ReactJS)
+    origin: "https://go-kart.onrender.com" // frontend URI (ReactJS)
 }
 
 server.use(cors(corsOptions));
