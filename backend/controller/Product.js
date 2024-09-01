@@ -1,4 +1,3 @@
-
 const { Product } = require('../model/Product');
 
 exports.createProduct = async (req, res) => {
@@ -56,13 +55,20 @@ exports.fetchAllProducts = async (req, res) => {
 };
 
 exports.fetchProductById = async (req, res) => {
+  
   const { id } = req.params;
 
   try {
-    const product = await Product.findById(id);
+    
+    const product = await Product.findOne({ id: parseInt(id) });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     res.status(200).json(product);
   } catch (err) {
-    res.status(400).json(err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 

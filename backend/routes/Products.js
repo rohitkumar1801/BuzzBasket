@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProduct, fetchAllProducts, fetchProductById, updateProduct } = require('../controller/Product');
+const { createProduct, fetchAllProducts, fetchProductById, updateProduct } = require('../controller/Product.updated');
 
 const router = express.Router();
 //  /products is already added in base path
