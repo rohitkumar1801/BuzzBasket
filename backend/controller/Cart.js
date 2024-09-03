@@ -17,7 +17,7 @@ exports.fetchCartByUser = async (req, res) => {
       path: 'items.product', // Populate the product field inside items
       select: '', // Adjust fields to populate
     });
-
+    
     // Check if the cart exists
     if (!cart) {
       return res.status(404).json({
