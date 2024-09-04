@@ -1,5 +1,17 @@
 const { Cart } = require('../model/Cart');
 
+exports.fetchAllCart = async (req, res) => {
+
+  const carts = await Cart.find({});
+  
+  res.status(200).json({
+    status: 'success',
+    message: 'All Carts are fetched successfully',
+    data: carts,
+  });
+
+}
+
 exports.fetchCartByUser = async (req, res) => {
   const { user } = req.query;
 

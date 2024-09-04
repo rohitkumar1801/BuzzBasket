@@ -116,7 +116,7 @@ exports.fetchProductById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const product = await Product.findOne({ id: parseInt(id) });
+    const product = await Product.findById(id);
 
     if (!product) {
       return res
@@ -143,8 +143,8 @@ exports.updateProduct = async (req, res) => {
 
   try {
     // Update the product using the custom id field and return the updated document
-    const product = await Product.findOneAndUpdate(
-      { id: parseInt(id) }, // Assuming the custom id is an integer; adjust if needed
+    const product = await Product.findByIdAndUpdate(
+      id, // Assuming the custom id is an integer; adjust if needed
       req.body,
       {
         new: true, // Return the updated document
@@ -189,7 +189,7 @@ exports.deleteProduct = async (req, res) => {
 
   try {
     // Delete the product using the custom id field
-    const product = await Product.findOneAndDelete({ id: parseInt(id) }); // Adjust parseInt if necessary
+    const product = await Product.findByIdAndRemove(id); // Adjust parseInt if necessary
 
     // Handle the case where the product is not found
     if (!product) {
