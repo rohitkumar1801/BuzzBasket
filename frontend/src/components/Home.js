@@ -1,16 +1,18 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "./Navbar";
 import ProductList from "./ProductList";
-import Footer from './Footer';
-import Pagination from './Pagination'; // Import the Pagination component
+import Footer from "./Footer";
+import Pagination from "./Pagination"; // Import the Pagination component
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10; // Example: Set this to your total pages or manage it dynamically
+   // Example: Set this to your total pages or manage it dynamically
+
+  const [totalItems, setTotalItems] = useState(0);
 
   const handlePageChange = (page) => {
-    console.log("page", page)
+    console.log("page", page);
     setCurrentPage(page);
   };
 
@@ -22,18 +24,22 @@ const Home = () => {
 
         {/* Define routes for different components */}
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <>
-                <ProductList currentPage={currentPage} />
-                <Pagination 
-                  currentPage={currentPage} 
-                  totalPages={totalPages} 
-                  onPageChange={handlePageChange} 
+                <ProductList
+                  currentPage={currentPage}
+                  setTotalItems={setTotalItems}
+                />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(totalItems/16)}
+                  onPageChange={handlePageChange}
+                  
                 />
               </>
-            } 
+            }
           />
         </Routes>
 

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+import { IoStarSharp, IoStarHalfSharp } from "react-icons/io5";
 
 // Shimmer component to simulate loading state
 const Shimmer = () => (
@@ -12,15 +13,47 @@ const Shimmer = () => (
   </div>
 );
 
-const ProductList = ({currentPage}) => {
+// Function to render stars based on rating (supports decimals)
+const renderStars = (rating) => {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  const emptyStars = 5 - Math.ceil(rating);
+
+  return (
+    <div className="flex items-center">
+      {[...Array(fullStars)].map((_, i) => (
+        <IoStarSharp key={i} className="text-yellow-500 w-5 h-5" />
+      ))}
+      {hasHalfStar && <IoStarHalfSharp className="text-yellow-500 w-5 h-5" />}
+      {[...Array(emptyStars)].map((_, i) => (
+        <IoStarSharp key={`empty-${i}`} className="text-gray-400 w-5 h-5" />
+      ))}
+    </div>
+  );
+};
+
+const ProductList = ({ currentPage, setTotalItems }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState(null); // Track errors
 
   const getProducts = async () => {
     setLoading(true); // Set loading to true before fetching
-    const res = await fetch(`http://localhost:8080/products?_page=${currentPage}&_limit=12`);
-    const data = await res.json();
-    setProducts(data.products);
+    setError(null); // Reset errors
+    try {
+      const res = await fetch(
+        `http://localhost:8080/products?_page=${currentPage}&_limit=16`
+      );
+      const items = await res.headers.get("X-Total-Count");
+      const data = await res.json();
+      setProducts(data.products);
+      setTotalItems(items);
+    } catch (error) {
+      setError(
+        "Failed to fetch products. Please try again later.",
+        error.message
+      );
+    }
     setLoading(false); // Set loading to false after fetching
   };
 
@@ -35,10 +68,36 @@ const ProductList = ({currentPage}) => {
           All Products
         </h2>
 
+        {/* Display error message if there is an error */}
+        {error && <div className="text-red-600 text-center mb-6">{error}</div>}
+
+        {/* Category */}
+
+        <div>
+          <label
+            htmlFor="category"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Category
+          </label>
+
+          <select
+            id="category"
+            name="category"
+            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            onChange={(e) => console.log(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="home">Home & Furniture</option>
+          </select>
+        </div>
+
         {loading ? (
           // Show shimmer effect when loading
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-            {Array(products?.length)
+            {Array(products?.length) // Show 8 shimmer items regardless of products length
               .fill(0)
               .map((_, index) => (
                 <Shimmer key={index} />
@@ -64,9 +123,18 @@ const ProductList = ({currentPage}) => {
                   <h3 className="mt-2 text-md text-gray-700 font-semibold">
                     {product.title}
                   </h3>
-                  <p className="mt-1 text-md font-medium text-gray-900">
-                    ${product.price}
-                  </p>
+                  <div className="flex justify-between items-center">
+                    {/* Dynamic star rating */}
+                    <div className="flex items-center">
+                      {renderStars(product.rating)}
+                      <span className="ml-2 text-md text-gray-600">
+                        {product.rating.toFixed(1)}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-md font-medium text-gray-900">
+                      ${product.price}
+                    </p>
+                  </div>
                 </div>
                 <div className="absolute inset-0 border border-gray-300 rounded-lg pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-300"></div>
               </a>
