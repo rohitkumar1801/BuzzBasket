@@ -37,9 +37,17 @@ const ProductList = ({ currentPage, setTotalItems }) => {
   const [loading, setLoading] = useState(true); // Track loading state
   const [error, setError] = useState(null); // Track errors
 
+  
+
+ 
+
+  
+
+  
+
   const getProducts = async () => {
-    setLoading(true); // Set loading to true before fetching
-    setError(null); // Reset errors
+    setLoading(true); 
+    setError(null); 
     try {
       const res = await fetch(
         `http://localhost:8080/products?_page=${currentPage}&_limit=16`
@@ -73,31 +81,12 @@ const ProductList = ({ currentPage, setTotalItems }) => {
 
         {/* Category */}
 
-        <div>
-          <label
-            htmlFor="category"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Category
-          </label>
-
-          <select
-            id="category"
-            name="category"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            onChange={(e) => console.log(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="electronics">Electronics</option>
-            <option value="fashion">Fashion</option>
-            <option value="home">Home & Furniture</option>
-          </select>
-        </div>
+         
 
         {loading ? (
           // Show shimmer effect when loading
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-            {Array(products?.length) // Show 8 shimmer items regardless of products length
+            {Array(products.length || 16) // Show 8 shimmer items regardless of products length
               .fill(0)
               .map((_, index) => (
                 <Shimmer key={index} />
