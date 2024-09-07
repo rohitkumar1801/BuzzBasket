@@ -1,11 +1,15 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
+import { fetchCategories } from "../slice/categorySlice";
 
-const Navbar = () => {
+const Navbar = ({setSelectedCategory}) => {
+  const { categories } = useSelector((store) => store.category);
+  const dispatch = useDispatch();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Sample category data
-  const categories = ["Electronics", "Fashion", "Home", "Books", "Toys"];
 
   const handleMouseEnter = () => {
     setIsDropdownOpen(true);
@@ -14,6 +18,14 @@ const Navbar = () => {
   const handleMouseLeave = () => {
     setIsDropdownOpen(false);
   };
+
+  const handleCategory = (slug) => {
+    setSelectedCategory(slug)
+  }
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   return (
     <header className="bg-gray-900 text-white py-4">
@@ -29,8 +41,12 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-gray-300 hover:text-white">Home</a>
-          <a href="#" className="text-gray-300 hover:text-white">Products</a>
+          <a href="#" className="text-gray-300 hover:text-white">
+            Home
+          </a>
+          <a href="#" className="text-gray-300 hover:text-white">
+            Products
+          </a>
 
           {/* Categories Dropdown */}
           <div
@@ -42,29 +58,35 @@ const Navbar = () => {
               Categories
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu with Two Columns */}
             <div
-              className={`absolute left-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg z-50 transition-all duration-300 transform ${
+              className={`absolute left-0 mt-2 w-80 bg-white text-gray-900 rounded-lg shadow-lg z-50 transition-all duration-300 transform ${
                 isDropdownOpen
                   ? "opacity-100 visible translate-y-0"
                   : "opacity-0 invisible -translate-y-2"
               }`}
             >
-              <ul className="py-2">
-                {categories.map((category) => (
+              <ul className="py-2 grid grid-cols-3 gap-4 px-4">
+                {categories?.map((category) => (
                   <li
-                    key={category}
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                    key={category.id}
+                    className="block py-1 text-sm font-semibold hover:text-gray-500 cursor-pointer"
+                    onClick={() => handleCategory(category.slug)}
                   >
-                    {category}
+                    {/* <Link to={`/${category.slug}`}></Link> */}
+                    {category.name}
                   </li>
                 ))}
               </ul>
             </div>
           </div>
 
-          <a href="#" className="text-gray-300 hover:text-white">About</a>
-          <a href="#" className="text-gray-300 hover:text-white">Contact</a>
+          <a href="#" className="text-gray-300 hover:text-white">
+            About
+          </a>
+          <a href="#" className="text-gray-300 hover:text-white">
+            Contact
+          </a>
         </nav>
 
         {/* Search Bar */}

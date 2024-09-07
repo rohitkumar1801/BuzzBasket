@@ -97,7 +97,7 @@ exports.fetchAllProducts = async (req, res) => {
       .json({
         status: "success",
         message: "All products are successfully updated",
-        products: products
+        data: products
       });
   } catch (err) {
     // Improved error handling

@@ -4,12 +4,13 @@ import Navbar from "./Navbar";
 import ProductList from "./ProductList";
 import Footer from "./Footer";
 import Pagination from "./Pagination"; // Import the Pagination component
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
-   // Example: Set this to your total pages or manage it dynamically
-
-  const [totalItems, setTotalItems] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const {totalItems} = useSelector((store) => store.product);
+ 
 
   const handlePageChange = (page) => {
     console.log("page", page);
@@ -20,7 +21,7 @@ const Home = () => {
     <Router>
       <div>
         {/* Navbar is outside of Routes, so it will always be rendered */}
-        <Navbar />
+        <Navbar setSelectedCategory={setSelectedCategory}/>
 
         {/* Define routes for different components */}
         <Routes>
@@ -30,7 +31,7 @@ const Home = () => {
               <>
                 <ProductList
                   currentPage={currentPage}
-                  setTotalItems={setTotalItems}
+                  selectedCategory={selectedCategory}
                 />
                 <Pagination
                   currentPage={currentPage}
