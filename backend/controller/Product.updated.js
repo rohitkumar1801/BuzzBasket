@@ -53,6 +53,7 @@ exports.fetchAllProducts = async (req, res) => {
     if (req.query.category) {
       const categories = req.query.category.split(",");
       query = query.where("category").in(categories);
+      condition.category = { $in: categories }; 
     }
 
     // Apply brand filter if provided
@@ -82,22 +83,17 @@ exports.fetchAllProducts = async (req, res) => {
     // Execute query to fetch products
     const products = await query.exec();
 
-    // const formattedProducts = products.map(product => ({
-    //     title: product.title,
-    //     price: product.price,
-    //     discountedPrice: (product.price * (1 - (product.discountPercentage || 0) / 100)).toFixed(2),
-    //     rating: product.rating,
-    //     thumbnail: product.thumbnail
-    //   }));
 
-    // Set total count header and send response
+    const distinctBrands = await Product.distinct('brand', condition);
+
     res.set("X-Total-Count", totalDocs);
     res
       .status(200)
       .json({
         status: "success",
         message: "All products are successfully updated",
-        data: products
+        data: products,
+        brands: distinctBrands
       });
   } catch (err) {
     // Improved error handling

@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
 
@@ -18,13 +19,13 @@ const ordersRouter = require('./routes/Order');
 //middlewares
 
 const corsOptions = {
-    origin: "http://localhost:3000" // frontend URI (ReactJS)
-}
-
-app.use(cors(corsOptions));
-app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
     exposedHeaders:['X-Total-Count']
-}))
+}
+app.use(cookieParser());
+app.use(cors(corsOptions));
+
 
 app.use(express.static(path.resolve(__dirname,'build')));
 

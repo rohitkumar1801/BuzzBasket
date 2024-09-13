@@ -11,19 +11,11 @@ exports.fetchAllCart = async (req, res) => {
 };
 
 exports.fetchCartByUser = async (req, res) => {
-  const { userId } = req.params;
-  console.log("userID", userId);
-
-  // Check if the user query parameter is provided
-  if (!userId) {
-    return res.status(400).json({
-      status: "error",
-      message: "User query parameter is required",
-    });
-  }
+  
+  const {userId} = req.user;
 
   try {
-    // Fetch the cart for the specified user
+    
     const cart = await Cart.findOne({ user: userId }).populate({
       path: "items.product", // Populate the product field inside items
       select: "", // Adjust fields to populate
@@ -41,7 +33,7 @@ exports.fetchCartByUser = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Cart items fetched successfully",
-      data: cart,
+      cart,
     });
   } catch (err) {
     // Handle errors and return a descriptive message
@@ -54,25 +46,32 @@ exports.fetchCartByUser = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-  const { quantity, product, user } = req.body;
 
+  const { quantity, product } = req.body;
+ 
+  const {userId} = req.user;
+ 
   // Input validation
-  if (quantity < 0 || !product || !user) {
+  if (quantity < 0 || !product ) {
     return res.status(400).json({
       status: "error",
-      message: "Valid Quantity, product, and user fields are required",
+      message: "Valid Quantity and product fields are required",
     });
   }
 
-  //66d4727a277948c93f4fa938
+  
 
   try {
     // Find or create a cart for the user
-    let cart = await Cart.findOne({ user }).exec();
+    let cart = await Cart.findOne({user: userId });
+    console.log("cart..", cart)
 
     if (!cart) {
-      cart = new Cart({ user, items: [] });
+      cart = new Cart({ user: userId, items: [] });
+      console.log("cart....", cart)
     }
+
+    
 
     // Check if the product already exists in the cart
     const existingItem = cart.items.find(
@@ -93,11 +92,13 @@ exports.addToCart = async (req, res) => {
     // Populate product details in the cart
     await updatedCart.populate("items.product");
 
+    console.log("updatedCart", updatedCart)
+
     // Return the updated cart with a success status
     res.status(200).json({
       status: "success",
       message: "Cart updated successfully",
-      data: updatedCart,
+      updatedCart,
     });
   } catch (err) {
     // Handle errors and return a descriptive message

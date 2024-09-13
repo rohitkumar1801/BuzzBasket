@@ -6,14 +6,14 @@ const {
   updateCart,
   fetchAllCart,
 } = require("../controller/Cart");
+const { verifyByToken } = require("../middlewares/verifyByToken");
 
 const router = express.Router();
 //  /products is already added in base path
 router
-  .post("/", addToCart)
+  .post("/", verifyByToken, addToCart)
   .get("/all", fetchAllCart)
-  .get("/:userId", fetchCartByUser)
-  
+  .get("/", verifyByToken, fetchCartByUser)
   
   .delete("/:id", deleteFromCart)
   .patch("/:id", updateCart);
