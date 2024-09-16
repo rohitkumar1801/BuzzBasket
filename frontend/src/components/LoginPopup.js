@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const LoginPopup = ({ isOpen, onClose, onLogin }) => {
   const [username, setUsername] = useState('');
@@ -72,7 +73,7 @@ const LoginPopup = ({ isOpen, onClose, onLogin }) => {
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
           <p className="text-center text-sm text-gray-600">
             {`Don't have an account?`}{' '}
-            <a href="#" className="text-blue-600 hover:underline">Sign up</a>
+            <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
           </p>
         </div>
       </div>

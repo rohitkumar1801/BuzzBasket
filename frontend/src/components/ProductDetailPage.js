@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   Star,
   Package,
@@ -10,22 +10,33 @@ import {
   Plus,
   Minus,
   ShoppingCart,
+  Loader,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart } from "../slice/cartSlice";
+import { handleItemQtyInCart } from "../slice/cartSlice";
 import LoginPopup from "./LoginPopup";
 
 
 const ProductDetailPage = () => {
+  const { id } = useParams();
+
+  const loggedInUser = useSelector((store) => store.user.loggedInUser);
+  const cartItems = useSelector((store) => store.cart.cartItems);
+
+  console.log("cartItems", id);
+  const isProductInCart = useMemo(() => {
+    const res = cartItems?.items?.some((item) => item.product._id === id);
+    console.log("isProductInCart", res);
+    return res;
+  }, [cartItems, id]);
 
   const dispatch = useDispatch();
-  const loggedInUser = useSelector((store) => store.user.loggedInUser);
 
   const [product, setProduct] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getProductById = async (id) => {
@@ -66,26 +77,72 @@ const ProductDetailPage = () => {
     );
   };
 
+  const handleAddToCart = async () => {
+    if (loggedInUser) {
+      setIsLoading(true);
+      await dispatch(handleItemQtyInCart({ productId: id, quantity: quantity }));
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000); // Simulating a delay for the loading effect
+    } else {
+      setShowLoginPopup(true);
+    }
+  };
+
+  const CartButton = () => {
+    const baseButtonClasses = `flex items-center justify-center w-full bg-indigo-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-indigo-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500`;
+
+    if (isLoading) {
+      return (
+        <button className={`flex items-center justify-center w-${1/3} bg-indigo-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-indigo-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500
+ animate-pulse`}>
+          <Loader className="animate-spin mr-2" size={20} />
+          <span>Processing...</span>
+        </button>
+      );
+    }
+
+    if (isProductInCart) {
+      return (
+        <Link to="/cart" className="block w-1/3">
+          <button className={baseButtonClasses}>
+            <ShoppingCart size={20} className="mr-2" />
+            <span>Go to Cart</span>
+          </button>
+        </Link>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleAddToCart}
+        className={ `flex items-center justify-center w-${1/3} bg-indigo-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-indigo-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+      >
+        <ShoppingCart size={20} className="mr-2" />
+        <span>Add to Cart</span>
+      </button>
+    );
+  };
+
+
+
+  
   const handleQuantityChange = (change) => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity + change));
   };
 
+  
+
   const handleLogin = (username, password) => {
     // Implement your login logic here
-    console.log(`Logging in with username: ${username} and password: ${password}`);
+    console.log(
+      `Logging in with username: ${username} and password: ${password}`
+    );
     // After successful login:
     // setIsLoggedIn(true);
     setShowLoginPopup(false);
   };
 
-  const handleAddToCart = () => {
-    if (loggedInUser) {
-      dispatch(addItemToCart({product: id, quantity: quantity}));
-      console.log(`Added ${quantity} ${product.title}(s) to cart`);
-    } else {
-      setShowLoginPopup(true);
-    }
-  };
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -151,29 +208,30 @@ const ProductDetailPage = () => {
                   </>
                 )}
               </div>
-              <div className="mt-6 flex items-center">
-                <div className="flex items-center border rounded-sm">
-                  <button
-                    onClick={() => handleQuantityChange(-1)}
-                    className="p-2 hover:bg-gray-100"
-                  >
-                    <Minus size={20} />
-                  </button>
-                  <span className="px-4">{quantity}</span>
-                  <button
-                    onClick={() => handleQuantityChange(1)}
-                    className="p-2 hover:bg-gray-100"
-                  >
-                    <Plus size={20} />
-                  </button>
+              <div className="mt-6 space-y-4">
+                {!isProductInCart && (
+                  <div className="flex items-center justify-start">
+                    <span className="mr-4 text-gray-700">Quantity:</span>
+                    <div className="flex items-center border rounded-md overflow-hidden">
+                      <button
+                        onClick={() => handleQuantityChange(-1)}
+                        className="p-2 hover:bg-gray-100 transition-colors duration-200"
+                      >
+                        <Minus size={20} />
+                      </button>
+                      <span className="px-4 font-medium">{quantity}</span>
+                      <button
+                        onClick={() => handleQuantityChange(1)}
+                        className="p-2 hover:bg-gray-100 transition-colors duration-200"
+                      >
+                        <Plus size={20} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-start w-full">
+                  <CartButton />
                 </div>
-                <button
-                  onClick={handleAddToCart}
-                  className="flex items-center gap-2 bg-indigo-600 text-white ml-4 px-4 py-2 rounded-sm font-semibold hover:bg-indigo-700 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <ShoppingCart size={20} />
-                  <span>Add to Cart</span>
-                </button>
               </div>
               <span className="mt-2 block text-sm text-gray-500">
                 {product.stock > 0
@@ -289,8 +347,8 @@ const ProductDetailPage = () => {
         )}
       </div>
       <LoginPopup
-        isOpen={showLoginPopup} 
-        onClose={() => setShowLoginPopup(false)} 
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
         onLogin={handleLogin}
       />
     </div>

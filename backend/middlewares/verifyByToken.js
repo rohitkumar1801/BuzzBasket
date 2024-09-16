@@ -7,7 +7,7 @@ exports.verifyByToken = async (req, res, next) => {
 
     // Check if token is provided
     if (!token) {
-      return res.status(401).json({
+      return res.status(204).json({
         status: 'error',
         message: 'No token provided'
       });

@@ -10,12 +10,15 @@ import { authLogout } from "../slice/userSlice";
 const Navbar = () => {
   const { categories } = useSelector((store) => store.category);
   const { loggedInUser } = useSelector((store) => store.user);
+  const {cartItems} = useSelector((store) => store.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const cartItemCount = cartItems?.items?.length || 0;
 
   const handleCategory = (slug) => {
     setSearchParams({ category: slug });
@@ -100,6 +103,11 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <Link to="/cart" className="text-white hover:text-blue-200 transition-colors duration-200">
               <ShoppingCart className="h-6 w-6" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
             {loggedInUser ? (
               <div className="relative">
