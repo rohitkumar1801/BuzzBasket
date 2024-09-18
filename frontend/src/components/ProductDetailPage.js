@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { handleItemQtyInCart } from "../slice/cartSlice";
 import LoginPopup from "./LoginPopup";
+import { fetchProductById, productNullOnDetailPage } from "../slice/productSlice";
 
 
 const ProductDetailPage = () => {
@@ -32,20 +33,19 @@ const ProductDetailPage = () => {
 
   const dispatch = useDispatch();
 
-  const [product, setProduct] = useState(null);
+  const product = useSelector((store) => store.product.product);
   const [currentImage, setCurrentImage] = useState(0);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const getProductById = async (id) => {
-      const res = await fetch(`http://localhost:8080/products/${id}`);
-      const data = await res.json();
-      setProduct(data.product);
-    };
-    getProductById(id);
-  }, [id]);
+    dispatch(fetchProductById(id));
+
+    return () => {
+      dispatch(productNullOnDetailPage());
+    }
+  }, [dispatch, id]);
 
   if (!product) {
     return (
@@ -133,15 +133,6 @@ const ProductDetailPage = () => {
 
   
 
-  const handleLogin = (username, password) => {
-    // Implement your login logic here
-    console.log(
-      `Logging in with username: ${username} and password: ${password}`
-    );
-    // After successful login:
-    // setIsLoggedIn(true);
-    setShowLoginPopup(false);
-  };
 
 
   const getRandomColor = () => {
@@ -349,7 +340,8 @@ const ProductDetailPage = () => {
       <LoginPopup
         isOpen={showLoginPopup}
         onClose={() => setShowLoginPopup(false)}
-        onLogin={handleLogin}
+        id = {id}
+        handleLoginPopup = {() => setShowLoginPopup(false)}
       />
     </div>
   );

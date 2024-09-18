@@ -1,6 +1,26 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ITEMS_PER_PAGE } from "../store/constant";
 
+const fetchWithBody = async (url, method, body = null) => {
+  const options = {
+    method,
+    headers: { "content-type": "application/json" },
+    credentials: "include", // Include credentials for requests needing authentication
+  };
+
+  if (body) options.body = JSON.stringify(body);
+
+  const response = await fetch(url, options);
+  console.log("response", response);
+  // Check if the response is okay (2xx)
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch");
+  }
+
+  return response.json();
+};
+
 export const fetchProducts = createAsyncThunk(
   "product/fetchProducts",
   async ({ page, category, brand, _sort, _order }) => {
@@ -39,14 +59,17 @@ export const fetchProducts = createAsyncThunk(
 
 export const fetchProductById = createAsyncThunk(
   "product/fetchProductById",
-  async (id) => {
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:8080/products/${id}`);
+      console.log("p id", id)
+      const data = await fetchWithBody(
+        `http://localhost:8080/products/${id}`,
+        "GET"
+      );
 
-      const data = await response.json();
       return data.product;
     } catch (err) {
-      console.log(err);
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -55,12 +78,17 @@ const productSlice = createSlice({
   name: "product",
   initialState: {
     products: [],
+    product: null,
     brands: [],
     totalItems: 0,
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    productNullOnDetailPage: (state) => {
+      state.product = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
@@ -75,8 +103,22 @@ const productSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(fetchProductById.fulfilled, (state, action) => {
+        state.product = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchProductById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProductById.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
       });
   },
 });
+
+export const { productNullOnDetailPage } = productSlice.actions;
+
 
 export default productSlice.reducer;
