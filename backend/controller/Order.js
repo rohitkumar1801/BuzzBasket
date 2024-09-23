@@ -1,3 +1,4 @@
+const { Cart } = require("../model/Cart");
 const { Order } = require("../model/Order");
 
 exports.fetchOrdersByUser = async (req, res) => {
@@ -11,15 +12,56 @@ exports.fetchOrdersByUser = async (req, res) => {
     }
   };
   
+exports.fetchOrderById = async(req, res) =>{
+  const { id } = req.params;
+  console.log("order id", id)
+  try {
+    const order = await Order.findById(id);
+
+    await order.populate('cart.product');
+
+    console.log("order", order)
+    
+
+
+    res.status(200).json({status: "success", message:"Successfully fetched order by Id", order});
+  } catch (err) {
+    res.status(400).json(err);
+  }
+
+}
   exports.createOrder = async (req, res) => {
-    const order = new Order(req.body);
     try {
-      const doc = await order.save();
-      res.status(201).json(doc);
+      // Fetch the cart but don't populate the products in cart items
+      const cart = await Cart.findOne({user: req.body.user});
+      console.log("cart.....", cart.items)
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+  
+      // Create a new order, embedding the cart object directly
+      const order = new Order({
+        cart: cart.items, // Embedding the cart (with product IDs in items)
+        totalAmount: req.body.totalAmount,
+        totalItems: req.body.totalItems,
+        user: req.body.user,
+        paymentMethod: req.body.paymentMethod,
+        selectedAddress: req.body.selectedAddress,
+        status: req.body.status || 'pending'
+      });
+  
+      // Save the order with the cart embedded (product IDs remain)
+      const savedOrder = await order.save();
+      await savedOrder.populate('cart.product');
+      
+      res.status(201).json({status: "success", message:"Successfully fetched order by Id", savedOrder}); // Return the saved order
     } catch (err) {
+      console.log("Error creating order:", err);
       res.status(400).json(err);
     }
   };
+  
+  
   
   exports.deleteOrder = async (req, res) => {
       const { id } = req.params;

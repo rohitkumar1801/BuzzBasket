@@ -1,13 +1,19 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { IoStarSharp, IoStarHalfSharp, IoClose, IoFilterSharp } from "react-icons/io5";
+import {
+  IoStarSharp,
+  IoStarHalfSharp,
+  IoClose,
+  IoFilterSharp,
+  IoChevronDown,
+} from "react-icons/io5";
 import { fetchProducts } from "../slice/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { fetchCartByUserThunk } from "../slice/cartSlice";
-
+import { Transition } from "@headlessui/react";
 
 const Shimmer = ({ type }) => (
   <motion.div
@@ -87,9 +93,11 @@ const ProductList = ({ currentPage }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const [sortOption, setSortOption] = useState(sortOptions[0]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const removeBrand = (brand) => {
     setSelectedBrands((prevSelectedBrands) =>
@@ -98,19 +106,20 @@ const ProductList = ({ currentPage }) => {
   };
 
   const handleSortChange = (e) => {
-    const selectedValue = e.target.value;
+    console.log("e...", e)
+    const selectedValue = e.name;
     const selectedOption = sortOptions.find(
       (option) => option.name === selectedValue
     );
     setSortOption(selectedOption);
+    setIsDropdownOpen((prev) => !prev);
   };
 
   const handleBrandChange = (brand) => {
-    setSelectedBrands(
-      (prevSelectedBrands) =>
-        prevSelectedBrands.includes(brand)
-          ? prevSelectedBrands.filter((b) => b !== brand)
-          : [...prevSelectedBrands, brand]
+    setSelectedBrands((prevSelectedBrands) =>
+      prevSelectedBrands.includes(brand)
+        ? prevSelectedBrands.filter((b) => b !== brand)
+        : [...prevSelectedBrands, brand]
     );
   };
 
@@ -132,8 +141,6 @@ const ProductList = ({ currentPage }) => {
     fetchProductsData();
   }, [currentPage, sortOption, selectedBrands, selectedCategory, dispatch]);
 
-  
-
   return (
     <div className="bg-gray-100 py-10 min-h-screen">
       <div className="mx-auto w-full px-4 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -141,23 +148,34 @@ const ProductList = ({ currentPage }) => {
           <h1 className="text-3xl font-bold text-gray-900">Products</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Sort by:</span>
-              <div className="relative">
-                <select
-                  id="sort"
-                  value={sortOption.name}
-                  onChange={handleSortChange}
-                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              <span className="text-sm font-medium text-gray-700">
+                Sort by:
+              </span>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="appearance-none cursor-pointer bg-white border border-gray-200 rounded-sm py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 flex items-center justify-between w-48"
                 >
-                  {sortOptions.map((option, index) => (
-                    <option key={index}>{option.name}</option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
+                  <span>{sortOption.name}</span>
+                  <IoChevronDown
+                    className={`transition-transform duration-300 ${
+                      isDropdownOpen ? "transform rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-sm">
+                    {sortOptions.map((option, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSortChange(option)}
+                        className="cursor-pointer bg-gray-200 hover:bg-gray-300 px-3 py-2 text-sm text-gray-800"
+                      >
+                        {option.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <button
@@ -178,13 +196,20 @@ const ProductList = ({ currentPage }) => {
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: "25%", opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.01 }}
+                transition={{
+                  duration: 0.4, // Smoother duration
+                  ease: [0.4, 0, 0.2, 1], // Custom easing for a smoother feel
+                }}
                 className="bg-white p-6 rounded-lg shadow-lg mb-6 md:mb-0 md:mr-6 overflow-hidden"
+                layout // Enabling layout animation
               >
                 <h2 className="font-semibold text-2xl mb-4">Filters</h2>
 
                 <div className="mb-6">
-                  <label htmlFor="brands" className="block font-semibold text-gray-600 mb-2">
+                  <label
+                    htmlFor="brands"
+                    className="block font-semibold text-gray-600 mb-2"
+                  >
                     Brands
                   </label>
                   <div className="relative">
@@ -193,7 +218,9 @@ const ProductList = ({ currentPage }) => {
                       className="w-full text-left px-4 py-2 bg-gray-100 rounded-md shadow-sm hover:bg-gray-200 transition-colors duration-200"
                     >
                       Select Brands
-                      <span className="float-right">{isDropdownOpen ? "▲" : "▼"}</span>
+                      <span className="float-right">
+                        {isDropdownOpen ? "▲" : "▼"}
+                      </span>
                     </button>
                     {isDropdownOpen && (
                       <div className="absolute z-10 bg-white border rounded-md mt-2 w-full max-h-60 overflow-y-auto shadow-lg">
@@ -214,7 +241,9 @@ const ProductList = ({ currentPage }) => {
                             </label>
                           ))
                         ) : (
-                          <p className="px-4 py-2 text-gray-500">No brands available</p>
+                          <p className="px-4 py-2 text-gray-500">
+                            No brands available
+                          </p>
                         )}
                       </div>
                     )}
@@ -223,7 +252,9 @@ const ProductList = ({ currentPage }) => {
 
                 {selectedBrands.length > 0 && (
                   <div className="mb-6">
-                    <h4 className="font-semibold text-gray-600 mb-2">Selected Brands:</h4>
+                    <h4 className="font-semibold text-gray-600 mb-2">
+                      Selected Brands:
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedBrands.map((brand, index) => (
                         <motion.div
@@ -256,13 +287,15 @@ const ProductList = ({ currentPage }) => {
             layout
             className="flex-grow"
             animate={{ width: isFilterOpen ? "75%" : "100%" }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {Array(12).fill(0).map((_, index) => (
-                  <Shimmer key={index} type="product" />
-                ))}
+                {Array(12)
+                  .fill(0)
+                  .map((_, index) => (
+                    <Shimmer key={index} type="product" />
+                  ))}
               </div>
             ) : (
               <motion.div
@@ -270,7 +303,9 @@ const ProductList = ({ currentPage }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${isFilterOpen ? `xl:grid-cols-3` : `xl:grid-cols-4` } gap-4`}
+                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${
+                  isFilterOpen ? `xl:grid-cols-3` : `xl:grid-cols-4`
+                } gap-4`}
               >
                 {products.length > 0 ? (
                   products.map((product) => {
@@ -333,9 +368,38 @@ const ProductList = ({ currentPage }) => {
                     );
                   })
                 ) : (
-                  <p className="text-center text-gray-500 text-lg col-span-full">
-                    Sorry, currently no products are available!
-                  </p>
+                  <Transition
+                    show={true}
+                    enter="transition-opacity duration-500"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="transition-opacity duration-500"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                    className="col-span-full"
+                  >
+                    <div className="text-center py-12 px-4 sm:px-6 lg:py-16 lg:px-8 bg-white shadow-lg rounded-lg">
+                      <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                        <span className="block">No products available</span>
+                      </h2>
+                      <p className="mt-4 text-xl text-gray-600">
+                        {`We're sorry, but there are currently no products that
+                        match your criteria. Please try adjusting your filters
+                        or check back later.`}
+                      </p>
+                      <div className="mt-8">
+                        <button
+                          onClick={() => {
+                            setSelectedBrands([]);
+                            setSortOption(sortOptions[0]);
+                          }}
+                          className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                        >
+                          Reset Filters
+                        </button>
+                      </div>
+                    </div>
+                  </Transition>
                 )}
               </motion.div>
             )}

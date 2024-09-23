@@ -6,6 +6,7 @@ const {
   updateCart,
   fetchAllCart,
   handleQuantityInCart,
+  deleteCart,
 } = require("../controller/Cart");
 const { verifyByToken } = require("../middlewares/verifyByToken");
 
@@ -15,7 +16,9 @@ router
   .post("/", verifyByToken, handleQuantityInCart)
   .get("/all", fetchAllCart)
   .get("/", verifyByToken, fetchCartByUser)
+  .delete("/delete", verifyByToken, deleteCart)
   .delete("/", verifyByToken, deleteFromCart)
+
   .patch("/:id", updateCart);
 
 exports.router = router;

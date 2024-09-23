@@ -8,8 +8,8 @@ import { authLogout } from "../slice/userSlice";
 
 const Navbar = () => {
   const { categories } = useSelector((store) => store.category);
-  const { loggedInUser } = useSelector((store) => store.user);
-  const { cartItems } = useSelector((store) => store.cart);
+  const  loggedInUser  = useSelector((store) => store.user.loggedInUser);
+  const  cartItems  = useSelector((store) => store.cart.cartItems);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,7 +17,7 @@ const Navbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const cartItemCount = cartItems?.items?.length || 0;
+  const cartItemCount = cartItems?.length || 0;
 
   const handleCategory = (slug) => {
     setSearchParams({ category: slug });

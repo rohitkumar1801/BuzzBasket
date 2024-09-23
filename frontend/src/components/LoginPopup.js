@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import {  useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +10,7 @@ import { authLogin } from "../slice/userSlice";
 import { fetchCartByUserThunk } from "../slice/cartSlice";
 
 const schema = z.object({
- email: z.string().min(1, "Email is required").email("Email is invalid"),
+  email: z.string().min(1, "Email is required").email("Email is invalid"),
   password: z
     .string()
     .min(1, "Password is required")
@@ -21,17 +21,14 @@ const schema = z.object({
     ),
 });
 
-
-
 const LoginPopup = ({ isOpen, onClose, handleLoginPopup }) => {
   const dispatch = useDispatch();
 
   const loginError = useSelector((store) => store.user.loginError);
-
+  const loggedInUser = useSelector((store) => store.user.loggedInUser);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
 
   // useEffect(() => {
   //   if (loggedInUser) {
@@ -62,7 +59,10 @@ const LoginPopup = ({ isOpen, onClose, handleLoginPopup }) => {
     try {
       await dispatch(authLogin(userData));
       await dispatch(fetchCartByUserThunk());
-      if(loginError !== null) handleLoginPopup();
+      if (loggedInUser) {
+        console.log("loggedIn user");
+        handleLoginPopup();
+      }
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
@@ -141,7 +141,11 @@ const LoginPopup = ({ isOpen, onClose, handleLoginPopup }) => {
           <div className="flex justify-between items-center space-x-4">
             <button
               type="submit"
-              className={!isLoading ? `flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition duration-200` : `flex-1 bg-gradient-to-r from-blue-200 to-purple-300 text-white px-4 py-2 rounded-md hover:from-blue-300 hover:to-purple-200 focus:outline-none focus:ring-1 focus:ring-blue-200 focus:ring-offset-1 transition duration-200`}
+              className={
+                !isLoading
+                  ? `flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition duration-200`
+                  : `flex-1 bg-gradient-to-r from-blue-200 to-purple-300 text-white px-4 py-2 rounded-md hover:from-blue-300 hover:to-purple-200 focus:outline-none focus:ring-1 focus:ring-blue-200 focus:ring-offset-1 transition duration-200`
+              }
             >
               Sign In
             </button>

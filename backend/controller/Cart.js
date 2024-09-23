@@ -33,7 +33,7 @@ exports.fetchCartByUser = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Cart items fetched successfully",
-      cart,
+      cart: cart.items,
     });
   } catch (err) {
     // Handle errors and return a descriptive message
@@ -92,7 +92,7 @@ exports.handleQuantityInCart = async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "Cart updated successfully",
-      updatedCart: updatedCart,
+      updatedCart: updatedCart.items,
     });
   } catch (err) {
     console.error('Error updating cart:', err.message);
@@ -149,7 +149,7 @@ exports.deleteFromCart = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Item deleted from the cart successfully",
-      updatedCart,
+      updatedCart: updatedCart.items,
     });
   } catch (err) {
     console.error("Error deleting item from cart:", err);
@@ -161,6 +161,16 @@ exports.deleteFromCart = async (req, res) => {
   }
 };
 
+exports.deleteCart = async(req, res) => {
+  const {userId} = req.user;
+
+  try{
+    const cart = await Cart.findOneAndDelete({user: userId});
+    res.status(200).json({status: 'success', message:"Cart is successfully deleted", cart});
+  }catch(err){
+    res.status(400).json(err);
+  }
+}
 
 exports.updateCart = async (req, res) => {
   const { id } = req.params;

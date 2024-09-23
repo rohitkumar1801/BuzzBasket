@@ -14,9 +14,8 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, required: true, default: 'user' },
-  addresses: { type: [addressSchema] }, // Array of address sub-documents
+  addresses: { type: [addressSchema] }, 
   name: { type: String },
-  // orders: { type: [orderSchema] } // Array of order sub-documents
 });
 
 const virtual = userSchema.virtual('id');

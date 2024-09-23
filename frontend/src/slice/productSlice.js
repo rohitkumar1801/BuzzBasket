@@ -69,6 +69,7 @@ export const fetchProductById = createAsyncThunk(
 
       return data.product;
     } catch (err) {
+      console.log("errrrrr", err)
       return rejectWithValue(err.message);
     }
   }
@@ -82,7 +83,8 @@ const productSlice = createSlice({
     brands: [],
     totalItems: 0,
     loading: false,
-    error: null,
+    productError: null,
+    productListError: null
   },
   reducers: {
     productNullOnDetailPage: (state) => {
@@ -112,7 +114,7 @@ const productSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchProductById.rejected, (state, action) => {
-        state.error = action.payload;
+        state.productError = action.payload;
         state.loading = false;
       });
   },

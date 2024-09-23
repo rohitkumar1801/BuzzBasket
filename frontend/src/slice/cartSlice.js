@@ -64,10 +64,35 @@ export const fetchCartByUserThunk = createAsyncThunk("cart/fetchCartByUser", asy
       }
 
       const data = await response.json();
+      console.log("data cart", data);
       return data.cart;
     } catch (err) {
       return rejectWithValue({ message: err.message });
     }
+});
+
+export const deleteCartThunk = createAsyncThunk("cart/deleteCartThunk", async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`http://localhost:8080/cart/delete`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return rejectWithValue(errorData);
+    }
+
+    if (response.status === 204) {
+      return null;
+    }
+
+    const data = await response.json();
+    console.log("data cart", data);
+    return data.cart;
+  } catch (err) {
+    return rejectWithValue({ message: err.message });
+  }
 });
 
 const cartSlice = createSlice({
@@ -110,7 +135,14 @@ const cartSlice = createSlice({
       .addCase(removeItemFromCart.rejected, (state, action) =>{
         state.error = action.payload;
         state.status = 'failed';
+      }).addCase(deleteCartThunk.fulfilled , (state)=>{
+        state.cartItems = [],
+        state.status = 'succeeded';
+      }).addCase(deleteCartThunk.rejected , (state, action)=>{
+        state.error = action.payload;
+        state.status = 'failed';
       })
+      
   }
 });
 

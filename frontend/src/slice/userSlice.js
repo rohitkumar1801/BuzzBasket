@@ -11,7 +11,7 @@ const fetchWithBody = async (url, method, body = null) => {
   if (body) options.body = JSON.stringify(body);
 
   const response = await fetch(url, options);
-  console.log("response", response)
+  console.log("response", response);
   // Check if the response is okay (2xx)
   if (!response.ok) {
     const errorData = await response.json();
@@ -45,15 +45,14 @@ export const authLogin = createAsyncThunk(
   "auth/login",
   async (userData, { rejectWithValue }) => {
     try {
-      console.log("userData", userData)
+      console.log("userData", userData);
       const data = await fetchWithBody(
         "http://localhost:8080/auth/login",
         "POST",
         userData
       );
 
-     
-    return data.user;
+      return data.user;
     } catch (err) {
       console.log("Login Error:", err);
       return rejectWithValue(err.message);
@@ -74,7 +73,7 @@ export const getUserByToken = createAsyncThunk(
         }
       );
 
-    //   console.log("from home",response.status)
+      //   console.log("from home",response.status)
 
       if (response.status === 204) {
         return null;
@@ -119,12 +118,18 @@ export const authLogout = createAsyncThunk(
 // User slice
 const userSlice = createSlice({
   name: "user",
-  initialState: { loggedInUser: null, loginError: null, signupError: null, getUserFromTokenError: null, logoutError:null  },
+  initialState: {
+    loggedInUser: null,
+    loginError: null,
+    signupError: null,
+    getUserFromTokenError: null,
+    logoutError: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(authSignup.fulfilled, (state, action) => {
-        console.log("authSignup.fulfill", action.payload)
+        console.log("authSignup.fulfill", action.payload);
         state.loggedInUser = action.payload;
         state.signupError = null;
       })
@@ -132,16 +137,15 @@ const userSlice = createSlice({
         state.signupError = action.payload;
       })
       .addCase(authLogin.fulfilled, (state, action) => {
-        console.log("authLogin action.payload", action.payload)
+        console.log("authLogin action.payload", action.payload);
         state.loggedInUser = action.payload;
         state.loginError = null;
       })
       .addCase(authLogin.rejected, (state, action) => {
         state.loginError = action.payload;
-        
       })
       .addCase(getUserByToken.fulfilled, (state, action) => {
-        if (action.payload ) {
+        if (action.payload) {
           state.loggedInUser = action.payload;
         }
       })
@@ -149,7 +153,7 @@ const userSlice = createSlice({
         state.getUserFromTokenError = action.payload;
       })
       .addCase(authLogout.fulfilled, (state) => {
-        state.loggedInUser = null; 
+        state.loggedInUser = null;
         state.logoutError = null;
       })
       .addCase(authLogout.rejected, (state, action) => {
