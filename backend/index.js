@@ -19,7 +19,7 @@ const ordersRouter = require('./routes/Order');
 //middlewares
 
 const corsOptions = {
-    origin: ["https://buzz-basket-front.vercel.app/","http://localhost:5173"],
+    origin: ["https://buzz-basket-front.vercel.app","http://localhost:5173"],
     credentials: true,
     exposedHeaders:['X-Total-Count']
 }
