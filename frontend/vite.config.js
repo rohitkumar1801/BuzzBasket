@@ -6,10 +6,7 @@ export default defineConfig({
     {
       name: 'treat-js-files-as-jsx',
       async transform(code, id) {
-        // Ensure the file is a .js file in the src directory
         if (!id.endsWith('.js') || !id.includes('/src/')) return null;
-
-        // Use transformWithEsbuild to handle JSX in .js files
         return transformWithEsbuild(code, id, {
           loader: 'jsx',
           jsx: 'automatic',
@@ -21,8 +18,24 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       loader: {
-        '.js': 'jsx', // Treat all .js files as JSX
+        '.js': 'jsx',
       },
     },
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
+    },
+  },
+  server: {
+    port: 5173,
   },
 });
