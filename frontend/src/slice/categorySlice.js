@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const fetchCategories = createAsyncThunk('categories/fetch', async ()=>{
     try {
-        const response = await fetch(`http://localhost:8080/categories`);
+        const response = await fetch(`https://buzz-basket.vercel.app/categories`);
         const categoriesData = await response.json();
         return categoriesData.data;
       } catch (error) {

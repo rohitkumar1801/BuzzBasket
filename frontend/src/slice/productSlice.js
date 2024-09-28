@@ -37,7 +37,7 @@ export const fetchProducts = createAsyncThunk(
 
       // Fetch data from the API, combining all filters
       const response = await fetch(
-        `http://localhost:8080/products?${categoryFilter}${brandFilter}${sortFilter}${orderFilter}_page=${page}&_limit=${ITEMS_PER_PAGE}`
+        `https://buzz-basket.vercel.app/products?${categoryFilter}${brandFilter}${sortFilter}${orderFilter}_page=${page}&_limit=${ITEMS_PER_PAGE}`
       );
 
       // Extract total items count and product data
@@ -63,7 +63,7 @@ export const fetchProductById = createAsyncThunk(
     try {
       console.log("p id", id)
       const data = await fetchWithBody(
-        `http://localhost:8080/products/${id}`,
+        `https://buzz-basket.vercel.app/products/${id}`,
         "GET"
       );
 

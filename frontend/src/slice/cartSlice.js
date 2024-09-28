@@ -5,7 +5,7 @@ export const handleItemQtyInCart = createAsyncThunk(
   "cart/handleItemQtyInCart",
   async (itemData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:8080/cart', {
+      const response = await fetch('https://buzz-basket.vercel.app/cart', {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -29,7 +29,7 @@ export const handleItemQtyInCart = createAsyncThunk(
 
 export const removeItemFromCart = createAsyncThunk("cart/removeItem", async(id,{ rejectWithValue })=>{
   try{
-    const response = await fetch('http://localhost:8080/cart',{
+    const response = await fetch('https://buzz-basket.vercel.app/cart',{
       method: 'DELETE',
         headers: {
           'content-type': 'application/json',
@@ -50,7 +50,7 @@ export const removeItemFromCart = createAsyncThunk("cart/removeItem", async(id,{
 
 export const fetchCartByUserThunk = createAsyncThunk("cart/fetchCartByUser", async (itemData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:8080/cart', {
+      const response = await fetch('https://buzz-basket.vercel.app/cart', {
         credentials: 'include',
       });
 
@@ -73,7 +73,7 @@ export const fetchCartByUserThunk = createAsyncThunk("cart/fetchCartByUser", asy
 
 export const deleteCartThunk = createAsyncThunk("cart/deleteCartThunk", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch(`http://localhost:8080/cart/delete`, {
+    const response = await fetch(`https://buzz-basket.vercel.app/cart/delete`, {
       method: 'DELETE',
       credentials: 'include',
     });

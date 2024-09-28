@@ -4,7 +4,7 @@ export const createOrderThunk = createAsyncThunk(
   "order/create",
   async (orderData, rejectWithValue) => {
     try {
-      const response = await fetch("http://localhost:8080/orders", {
+      const response = await fetch("https://buzz-basket.vercel.app/orders", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -31,7 +31,7 @@ export const fetchOrdersByUser = createAsyncThunk(
     "order/fetchOrdersByUser",
     async (_, rejectWithValue) => {
       try {
-        const response = await fetch("http://localhost:8080/orders", {
+        const response = await fetch("https://buzz-basket.vercel.app/orders", {
          
           credentials: "include",
         });
@@ -54,7 +54,7 @@ export const fetchOrdersByUser = createAsyncThunk(
     "order/fetchOrderById",
     async (id, rejectWithValue) => {
       try {
-        const response = await fetch(`http://localhost:8080/orders/${id}`, {
+        const response = await fetch(`https://buzz-basket.vercel.app/orders/${id}`, {
           credentials: "include",
         });
   

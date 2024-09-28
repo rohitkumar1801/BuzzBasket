@@ -27,7 +27,7 @@ export const authSignup = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const data = await fetchWithBody(
-        "http://localhost:8080/auth/signup",
+        "https://buzz-basket.vercel.app/auth/signup",
         "POST",
         userData
       );
@@ -47,7 +47,7 @@ export const authLogin = createAsyncThunk(
     try {
       console.log("userData", userData);
       const data = await fetchWithBody(
-        "http://localhost:8080/auth/login",
+        "https://buzz-basket.vercel.app/auth/login",
         "POST",
         userData
       );
@@ -67,7 +67,7 @@ export const getUserByToken = createAsyncThunk(
     try {
       console.log("getuserbytoken ....");
       const response = await fetch(
-        "http://localhost:8080/auth/getUserByToken",
+        "https://buzz-basket.vercel.app/auth/getUserByToken",
         {
           credentials: "include",
         }
@@ -97,7 +97,7 @@ export const authLogout = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:8080/auth/logout", {
+      const response = await fetch("https://buzz-basket.vercel.app/auth/logout", {
         method: "GET",
         credentials: "include",
       });
