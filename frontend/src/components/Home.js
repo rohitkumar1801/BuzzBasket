@@ -6,7 +6,7 @@ import { fetchCartByUserThunk } from "../slice/cartSlice";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ProtectedRoute from "./ProtectedRoute";
-import MyOrders from "./Myorders";
+
 import Pagination from "./Pagination";
 import { ITEMS_PER_PAGE } from "../store/constant";
 import Checkout from "./Checkout";
@@ -20,6 +20,7 @@ const Signup = lazy(() => import("./Auth/SignUp"));
 const Cart = lazy(() => import("./Cart"));
 const NotFound = lazy(() => import("./NotFound"));
 const MyProfile = lazy(() => import("./MyProfile"));
+const MyOrders = lazy(()=>import("./MyOrders"));
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -112,7 +113,7 @@ const Home = () => {
                 path="/myorders"
                 element={
                   <ProtectedRoute>
-                    <MyOrders />
+                    <MyOrders/>
                   </ProtectedRoute>
                 }
               />
