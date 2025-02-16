@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { authLogout } from './userSlice';
+import { HOST_URL } from '../store/constant';
 
 export const handleItemQtyInCart = createAsyncThunk(
   "cart/handleItemQtyInCart",
   async (itemData, { rejectWithValue }) => {
     try {
-      const response = await fetch('https://buzz-basket.vercel.app/cart', {
+      const response = await fetch(`${HOST_URL}/cart`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -29,7 +30,7 @@ export const handleItemQtyInCart = createAsyncThunk(
 
 export const removeItemFromCart = createAsyncThunk("cart/removeItem", async(id,{ rejectWithValue })=>{
   try{
-    const response = await fetch('https://buzz-basket.vercel.app/cart',{
+    const response = await fetch(`${HOST_URL}/cart`,{
       method: 'DELETE',
         headers: {
           'content-type': 'application/json',
@@ -50,7 +51,7 @@ export const removeItemFromCart = createAsyncThunk("cart/removeItem", async(id,{
 
 export const fetchCartByUserThunk = createAsyncThunk("cart/fetchCartByUser", async (itemData, { rejectWithValue }) => {
     try {
-      const response = await fetch('https://buzz-basket.vercel.app/cart', {
+      const response = await fetch(`${HOST_URL}/cart`, {
         credentials: 'include',
       });
 
@@ -73,7 +74,7 @@ export const fetchCartByUserThunk = createAsyncThunk("cart/fetchCartByUser", asy
 
 export const deleteCartThunk = createAsyncThunk("cart/deleteCartThunk", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch(`https://buzz-basket.vercel.app/cart/delete`, {
+    const response = await fetch(`${HOST_URL}/cart/delete`, {
       method: 'DELETE',
       credentials: 'include',
     });

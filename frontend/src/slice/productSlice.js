@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ITEMS_PER_PAGE } from "../store/constant";
-
+import { HOST_URL } from "../store/constant";
 const fetchWithBody = async (url, method, body = null) => {
   const options = {
     method,
@@ -37,7 +37,7 @@ export const fetchProducts = createAsyncThunk(
 
       // Fetch data from the API, combining all filters
       const response = await fetch(
-        `https://buzz-basket.vercel.app/products?${categoryFilter}${brandFilter}${sortFilter}${orderFilter}_page=${page}&_limit=${ITEMS_PER_PAGE}`
+        `${HOST_URL}/products?${categoryFilter}${brandFilter}${sortFilter}${orderFilter}_page=${page}&_limit=${ITEMS_PER_PAGE}`
       );
 
       // Extract total items count and product data
@@ -63,7 +63,7 @@ export const fetchProductById = createAsyncThunk(
     try {
       console.log("p id", id)
       const data = await fetchWithBody(
-        `https://buzz-basket.vercel.app/products/${id}`,
+        `${HOST_URL}/products/${id}`,
         "GET"
       );
 

@@ -1,6 +1,6 @@
 export function createOrder(order) {
   return new Promise(async (resolve) => {
-    const response = await fetch('https://buzz-basket.vercel.app/orders', {
+    const response = await fetch('{HOST_URL}/orders', {
       method: 'POST',
       body: JSON.stringify(order),
       headers: { 'content-type': 'application/json' },
@@ -12,7 +12,7 @@ export function createOrder(order) {
 
 export function updateOrder(order) {
   return new Promise(async (resolve) => {
-    const response = await fetch('https://buzz-basket.vercel.app/orders/'+order.id, {
+    const response = await fetch('{HOST_URL}/orders/'+order.id, {
       method: 'PATCH',
       body: JSON.stringify(order),
       headers: { 'content-type': 'application/json' },
@@ -35,7 +35,7 @@ export function fetchAllOrders(sort, pagination) {
   return new Promise(async (resolve) => {
     //TODO: we will not hard-code server URL here
     const response = await fetch(
-      'https://buzz-basket.vercel.app/orders?' + queryString
+      '{HOST_URL}/orders?' + queryString
     );
     const data = await response.json();
     const totalOrders = await response.headers.get('X-Total-Count');

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { HOST_URL } from "../store/constant";
 
 // Helper function to handle fetch requests
 const fetchWithBody = async (url, method, body = null) => {
@@ -27,7 +28,7 @@ export const authSignup = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const data = await fetchWithBody(
-        "https://buzz-basket.vercel.app/auth/signup",
+        `${HOST_URL}/auth/signup`,
         "POST",
         userData
       );
@@ -47,7 +48,7 @@ export const authLogin = createAsyncThunk(
     try {
       console.log("userData", userData);
       const data = await fetchWithBody(
-        "https://buzz-basket.vercel.app/auth/login",
+        `${HOST_URL}/auth/login`,
         "POST",
         userData
       );
@@ -67,13 +68,11 @@ export const getUserByToken = createAsyncThunk(
     try {
       console.log("getuserbytoken ....");
       const response = await fetch(
-        "https://buzz-basket.vercel.app/auth/getUserByToken",
+        `${HOST_URL}/auth/getUserByToken`,
         {
           credentials: "include",
         }
       );
-
-      //   console.log("from home",response.status)
 
       if (response.status === 204) {
         return null;
@@ -97,7 +96,7 @@ export const authLogout = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("https://buzz-basket.vercel.app/auth/logout", {
+      const response = await fetch(`${HOST_URL}/auth/logout`, {
         method: "GET",
         credentials: "include",
       });
@@ -115,6 +114,30 @@ export const authLogout = createAsyncThunk(
   }
 );
 
+// Update user profile action
+export const updateUserProfile = createAsyncThunk(
+  "user/updateProfile",
+  async (userData, { getState, rejectWithValue }) => {
+    try {
+      const { loggedInUser } = getState().user;
+      if (!loggedInUser || !loggedInUser.id) {
+        throw new Error("User not authenticated");
+      }
+
+      const data = await fetchWithBody(
+        `${HOST_URL}/users/${loggedInUser.id}`,
+        "PATCH",
+        userData
+      );
+
+      return data;
+    } catch (err) {
+      console.error("Update Profile Error:", err);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // User slice
 const userSlice = createSlice({
   name: "user",
@@ -124,6 +147,8 @@ const userSlice = createSlice({
     signupError: null,
     getUserFromTokenError: null,
     logoutError: null,
+    loading: false,
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -158,6 +183,19 @@ const userSlice = createSlice({
       })
       .addCase(authLogout.rejected, (state, action) => {
         state.logoutError = action.payload;
+      })
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loggedInUser = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

@@ -19,7 +19,7 @@ const Login = lazy(() => import("./Auth/Login"));
 const Signup = lazy(() => import("./Auth/SignUp"));
 const Cart = lazy(() => import("./Cart"));
 const NotFound = lazy(() => import("./NotFound"));
-const MyProfile = lazy(() => import("./MyProfile"));
+const MyProfile = lazy(() => import("./UserProfile"));
 const MyOrders = lazy(()=>import("./MyOrders"));
 
 const LoadingFallback = () => (
@@ -102,7 +102,7 @@ const Home = () => {
                 }
               />
               <Route
-                path="/myprofile"
+                path="/profile"
                 element={
                   <ProtectedRoute>
                     <MyProfile />
@@ -110,7 +110,7 @@ const Home = () => {
                 }
               />
               <Route
-                path="/myorders"
+                path="/orders"
                 element={
                   <ProtectedRoute>
                     <MyOrders/>
@@ -134,6 +134,17 @@ const Home = () => {
                   </ProtectedRoute>
                 }
               />
+
+              <Route path="/products" element={
+                  <>
+                    <ProductList currentPage={currentPage} />
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </>
+                }/>
 
               <Route
                 path="order-confirmation/:id"

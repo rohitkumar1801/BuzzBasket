@@ -98,7 +98,7 @@ const Cart = ({ onProceedToCheckout }) => {
                         onClick={() =>
                           handleQuantityChange(
                             item.product._id,
-                            item.quantity - 1
+                            -1
                           )
                         }
                         disabled={item.quantity <= 1 || loading}
@@ -113,7 +113,7 @@ const Cart = ({ onProceedToCheckout }) => {
                         onClick={() =>
                           handleQuantityChange(
                             item.product._id,
-                            item.quantity + 1
+                            1
                           )
                         }
                         disabled={loading}

@@ -59,11 +59,14 @@ const ShimmerEffect = () => (
   </div>
 );
 
-const LazyImage = ({ src, alt, className }) => {
+const LazyImage = ({ src, alt, className, onClick }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className={`${className} bg-gray-200 relative overflow-hidden`}>
+    <div 
+      className={`${className} bg-gray-200 relative overflow-hidden`}
+      onClick={onClick}
+    >
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader className="animate-spin text-gray-400" size={24} />

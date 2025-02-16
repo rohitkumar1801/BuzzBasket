@@ -11,6 +11,15 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
+      colors: {
+        navy: {
+          900: '#0F172A',
+        },
+        gold: {
+          500: '#C5A47E',
+          600: '#B08F69',
+        }
+      }
     },
   },
   plugins: [

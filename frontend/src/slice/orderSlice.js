@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
+import { HOST_URL } from "../store/constant";
 export const createOrderThunk = createAsyncThunk(
   "order/create",
   async (orderData, rejectWithValue) => {
     try {
-      const response = await fetch("https://buzz-basket.vercel.app/orders", {
+      const response = await fetch(`${HOST_URL}/orders`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -31,7 +31,7 @@ export const fetchOrdersByUser = createAsyncThunk(
     "order/fetchOrdersByUser",
     async (_, rejectWithValue) => {
       try {
-        const response = await fetch("https://buzz-basket.vercel.app/orders", {
+        const response = await fetch(`${HOST_URL}/orders`, {
          
           credentials: "include",
         });
@@ -54,7 +54,7 @@ export const fetchOrdersByUser = createAsyncThunk(
     "order/fetchOrderById",
     async (id, rejectWithValue) => {
       try {
-        const response = await fetch(`https://buzz-basket.vercel.app/orders/${id}`, {
+        const response = await fetch(`${HOST_URL}/orders/${id}`, {
           credentials: "include",
         });
   
@@ -74,7 +74,7 @@ export const fetchOrdersByUser = createAsyncThunk(
 
 const orderSlice = createSlice({
   name: "order",
-  initialState: { order: null, loading: false, error: null },
+  initialState: { orders: null, loading: false, error: null },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -82,7 +82,7 @@ const orderSlice = createSlice({
         state.loading = true;
       })
       .addCase(createOrderThunk.fulfilled, (state, action) => {
-        state.order = action.payload;
+        state.orders = action.payload;
         state.loading = false;
       })
       .addCase(createOrderThunk.rejected, (state, action) => {
@@ -92,10 +92,21 @@ const orderSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchOrderByIdThunk.fulfilled, (state, action) => {
-        state.order = action.payload;
+        state.orders = action.payload;
         state.loading = false;
       })
       .addCase(fetchOrderByIdThunk.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchOrdersByUser.fulfilled, (state, action) => {
+        state.orders = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchOrdersByUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchOrdersByUser.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
