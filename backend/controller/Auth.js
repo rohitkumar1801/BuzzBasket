@@ -36,7 +36,6 @@ exports.createUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevents access to the cookie via JavaScript
       maxAge: 3600000, // 1 hour in milliseconds
-      secure: true, // must be true on HTTPS
       sameSite: 'none' 
 
     });
@@ -84,7 +83,7 @@ exports.loginUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevents access to the cookie via JavaScript
       maxAge: 3600000, // 1 hour in milliseconds
-      secure: true, // must be true on HTTPS
+      
       sameSite: 'none' 
     });
 
@@ -145,8 +144,11 @@ exports.getUserByToken = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    // Clear the authentication cookie
-    res.clearCookie("token");
+    
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "none"
+    });
 
     return res.status(200).json({
       success: true,
