@@ -60,9 +60,9 @@ const Navbar = () => {
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gold-500 rounded-full flex items-center justify-center">
-                <span className="text-navy-900 font-bold text-2xl">L</span>
+                <span className="text-navy-900 font-bold text-2xl">B</span>
               </div>
-              <span className="text-xl font-semibold tracking-tight">Legacy Corp</span>
+              <span className="text-xl font-semibold tracking-tight">Buzz Basket</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -126,7 +126,7 @@ const Navbar = () => {
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Search legacy collection..."
+                  placeholder="Search product..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-6 py-2.5 rounded-full bg-white/5 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-gold-500 transition-all"

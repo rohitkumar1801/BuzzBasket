@@ -149,12 +149,14 @@ const OrderCard = ({ order }) => {
 const MyOrders = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((store) => store.order);
+  const loggedInUser = useSelector((store) => store.user.loggedInUser);
+  const { id } = loggedInUser;
 
   
   
   useEffect(() => {
-    dispatch(fetchOrdersByUser());
-  }, [dispatch]);
+    dispatch(fetchOrdersByUser(id));
+  }, [dispatch, id]);
   
   if (loading) {
     return (

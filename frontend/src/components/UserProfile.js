@@ -9,7 +9,8 @@ import { updateUserProfile } from "../slice/userSlice"; // Assuming this action 
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const { user, loading } = useSelector((store) => store.user);
+  
+  const {loggedInUser, loading} = useSelector((store) => store.user);
   const [isEditing, setIsEditing] = useState(false);
   const [addressIndex, setAddressIndex] = useState(0);
   
@@ -23,19 +24,19 @@ const UserProfile = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    if (loggedInUser) {
       setFormData({
-        name: user.name || "",
-        email: user.email || "",
+        name: loggedInUser.name || "",
+        email: loggedInUser.email || "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
-        addresses: user.addresses && user.addresses.length > 0 
-          ? user.addresses 
+        addresses: loggedInUser.addresses && loggedInUser.addresses.length > 0 
+          ? loggedInUser.addresses 
           : [{ building: "", street: "", city: "", state: "", postalCode: "", country: "" }],
       });
     }
-  }, [user]);
+  }, [loggedInUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -151,8 +152,8 @@ const UserProfile = () => {
                   <IoPersonCircleOutline className="text-gold-500 w-8 h-8" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-navy-900">{user?.name || "Account Details"}</h2>
-                  <p className="text-sm text-gray-600">{user?.email}</p>
+                  <h2 className="text-xl font-semibold text-navy-900">{loggedInUser?.name || "Account Details"}</h2>
+                  <p className="text-sm text-gray-600">{loggedInUser?.email}</p>
                 </div>
               </div>
               

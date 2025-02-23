@@ -235,14 +235,14 @@ const ProductDetailPage = () => {
               <p className="mt-4 text-gray-600">{product.description}</p>
               <div className="mt-4 flex items-center">
                 <span className="text-3xl font-bold text-gray-900">
-                  ${product.price.toFixed(2)}
+                  &#8377;{(85 * product.price).toFixed(2)}
                 </span>
                 {product.discountPercentage > 0 && (
                   <>
                     <span className="ml-2 text-2xl text-gray-500 line-through">
-                      $
+                      &#8377;
                       {(
-                        product.price /
+                        85 * product.price /
                         (1 - product.discountPercentage / 100)
                       ).toFixed(2)}
                     </span>

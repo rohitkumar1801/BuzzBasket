@@ -234,7 +234,7 @@ const ProductList = ({ currentPage }) => {
                         </h3>
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-lg font-bold text-gold-500">
-                            ${product.price}
+                            &#8377;{(85 * product.price).toFixed(2)}
                           </span>
                           {renderStars(product.rating)}
                         </div>

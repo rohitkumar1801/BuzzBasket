@@ -30,13 +30,11 @@ exports.createUser = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h", // Token expires in 1 hour
+      expiresIn: "1h",
     });
 
     res.cookie("token", token, {
       httpOnly: true, // Prevents access to the cookie via JavaScript
-      secure: false, // Only send over HTTPS in production
-      sameSite: "Strict", // Protects against CSRF attacks
       maxAge: 3600000, // 1 hour in milliseconds
     });
 

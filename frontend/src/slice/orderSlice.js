@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { HOST_URL } from "../store/constant";
+
 export const createOrderThunk = createAsyncThunk(
   "order/create",
   async (orderData, rejectWithValue) => {
@@ -29,9 +30,9 @@ export const createOrderThunk = createAsyncThunk(
 
 export const fetchOrdersByUser = createAsyncThunk(
     "order/fetchOrdersByUser",
-    async (_, rejectWithValue) => {
+    async (id, rejectWithValue) => {
       try {
-        const response = await fetch(`${HOST_URL}/orders`, {
+        const response = await fetch(`${HOST_URL}/orders/user/${id}`, {
          
           credentials: "include",
         });
