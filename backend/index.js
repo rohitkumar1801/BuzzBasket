@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const { Cashfree } = require("cashfree-pg");
 
 const productsRouter = require("./routes/Products");
 const categoriesRouter = require("./routes/Categories");
@@ -13,6 +14,7 @@ const usersRouter = require("./routes/Users");
 const authRouter = require("./routes/Auth");
 const cartRouter = require("./routes/Cart");
 const ordersRouter = require("./routes/Order");
+const paymentRouter = require("./routes/Payment");
 
 //middlewares
 
@@ -41,6 +43,7 @@ app.use("/users", usersRouter.router);
 app.use("/auth", authRouter.router);
 app.use("/cart", cartRouter.router);
 app.use("/orders", ordersRouter.router);
+app.use("/payment", paymentRouter.router);
 
 main().catch((err) => console.log(err));
 

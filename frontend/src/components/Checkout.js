@@ -1,52 +1,135 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { createOrderThunk } from "../slice/orderSlice";
+import { createOrderThunk, createPaymentThunk, resetPaymentState, verifyPaymentThunk } from "../slice/orderSlice";
 import { deleteCartThunk } from "../slice/cartSlice";
+import { load } from "@cashfreepayments/cashfree-js";
 
 const Checkout = () => {
+  
+
+  const [orderId, setOrderId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  let cashfree;
+
+  var initializeSDK = async function () {
+    cashfree = await load({
+      mode: "sandbox",
+    });
+  };
+  initializeSDK();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm();
-  const cartItems = useSelector((store) => store.cart.cartItems); // Assuming cart items are in Redux store
+
+  const cartItems = useSelector((store) => store.cart.cartItems);
   const loggedInUser = useSelector((store) => store.user.loggedInUser);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-
-
 
   const subtotal = cartItems?.reduce(
     (total, item) => total + item.product.price * item.quantity,
     0
   );
 
-  const onSubmit = async (data) => {
-    const orderData = {
+
+
+  const getSessionData = async (orderData) => {
+    try {
+      const result = await dispatch(createPaymentThunk(orderData)).unwrap();
+      if (!result?.payment_session_id || !result?.order_id) {
+        throw new Error("Failed to get payment session or order ID");
+      }
+      // Optionally, update state if needed later, but also return the IDs
+      setOrderId(result.order_id);
+      return {
+        sessionId: result.payment_session_id,
+        orderId: result.order_id,
+      };
+    } catch (error) {
+      throw new Error("Payment session creation failed: " + (error.message || "Unknown error"));
+    }
+  };
+  
+  const processPayment = async (orderData) => {
+    const { sessionId, orderId } = await getSessionData(orderData);
+    const checkoutOptions = {
+      paymentSessionId: sessionId,
+      redirectTarget: "_modal",
+    };
+  
+    return new Promise((resolve, reject) => {
+      cashfree.checkout(checkoutOptions)
+        .then((result) => {
+          if (result.error) {
+            reject(new Error(result.error.message || "Payment failed"));
+          } else if (result.paymentDetails) {
+            // Resolve with both payment details and orderId
+            resolve({ paymentDetails: result.paymentDetails, orderId });
+          } else if (result.redirect) {
+            console.log("Payment redirecting...");
+          }
+        })
+        .catch(reject);
+    });
+  };
+  
+  const handlePayment = async (orderData) => {
+    setIsLoading(true);
+    setError(null);
+  
+    try {
+      // Process payment and retrieve both payment details and orderId
+      const { paymentDetails, orderId } = await processPayment(orderData);
       
+      // Verify payment using the correct orderId
+      await dispatch(verifyPaymentThunk(orderId)).unwrap();
+      
+      // Create order after successful payment verification
+      const orderResult = await dispatch(createOrderThunk(orderData)).unwrap();
+
+      dispatch(resetPaymentState());
+      
+      // Clear cart and navigate to confirmation
+      await dispatch(deleteCartThunk()).unwrap();
+      navigate(`/order-confirmation/${orderResult.id}`);
+    } catch (error) {
+      console.error("Payment process failed:", error);
+      setError(error.message || "Payment failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
+  const onSubmit = async (formData) => {
+    const orderData = {
       totalAmount: subtotal,
       totalItems: cartItems.length,
       user: loggedInUser.id,
-      paymentMethod: data.paymentMethod,
+      paymentMethod: formData.paymentMethod,
       selectedAddress: {
-        building: data.building,
-        street: data.street,
-        city: data.city,
-        state: data.state,
-        postalCode: data.postalCode,
+        building: formData.building,
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
       },
     };
-    console.log("order", data);
-    console.log("order Data", orderData);
-    const res = await dispatch(createOrderThunk(orderData));
-    console.log("res.....", res)
-    await dispatch(deleteCartThunk());
-    navigate(`/order-confirmation/${res.payload.id}`);
+
+    await handlePayment(orderData);
   };
+
 
   return (
     <div className="bg-gray-100 min-h-screen py-12">

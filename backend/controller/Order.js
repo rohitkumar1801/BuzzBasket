@@ -4,7 +4,7 @@ const { Order } = require("../model/Order");
 exports.fetchOrdersByUser = async (req, res) => {
     const { userId } = req.params;
     try {
-      const orders = await Order.find({ user: userId });
+      const orders = await Order.find({ user: userId }).populate('cart.product');
   
       res.status(200).json(orders);
     } catch (err) {

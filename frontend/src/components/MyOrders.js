@@ -88,11 +88,12 @@ const OrderCard = ({ order }) => {
               <h4 className="text-sm font-medium text-navy-900 mb-3">Order Items</h4>
               <div className="space-y-3">
                 {order.cart.map((item, index) => (
+                  
                   <div key={index} className="flex items-start">
                     <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden mr-4">
-                      {item.product.imageUrl ? (
+                      {item.product.thumbnail ? (
                         <img 
-                          src={item.product.imageUrl} 
+                          src={item.product.thumbnail} 
                           alt={item.product.title} 
                           className="w-full h-full object-cover"
                         />

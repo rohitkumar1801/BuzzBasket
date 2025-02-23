@@ -165,7 +165,9 @@ exports.deleteCart = async(req, res) => {
   const {userId} = req.user;
 
   try{
-    const cart = await Cart.findOneAndDelete({user: userId});
+    const cart = await Cart.findOne({user: userId});
+    cart.items = [];
+    await cart.save();
     res.status(200).json({status: 'success', message:"Cart is successfully deleted", cart});
   }catch(err){
     res.status(400).json(err);
